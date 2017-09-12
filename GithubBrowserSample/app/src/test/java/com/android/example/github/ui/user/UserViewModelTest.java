@@ -56,12 +56,12 @@ public class UserViewModelTest {
 
     private UserViewModel userViewModel;
     private UserRepository userRepository;
-    private RepoRepository repoRepository;
+    private RepoProvider repoRepository;
 
     @Before
     public void setup() {
         userRepository = mock(UserRepository.class);
-        repoRepository = mock(RepoRepository.class);
+        repoRepository = mock(RepoProvider.class);
         userViewModel = new UserViewModel(userRepository, repoRepository);
     }
 

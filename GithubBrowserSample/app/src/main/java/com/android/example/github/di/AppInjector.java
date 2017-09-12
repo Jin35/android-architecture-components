@@ -37,6 +37,7 @@ public class AppInjector {
     public static void init(GithubApp githubApp) {
         DaggerAppComponent.builder().application(githubApp)
                 .build().inject(githubApp);
+        githubApp.setAuthorisation(null);
         githubApp
                 .registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
                     @Override
@@ -77,7 +78,7 @@ public class AppInjector {
     }
 
     private static void handleActivity(Activity activity) {
-        if (activity instanceof HasSupportFragmentInjector) {
+        if (activity instanceof Injectable) {
             AndroidInjection.inject(activity);
         }
         if (activity instanceof FragmentActivity) {

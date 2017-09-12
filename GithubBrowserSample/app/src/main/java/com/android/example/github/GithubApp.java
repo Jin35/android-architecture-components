@@ -16,10 +16,15 @@
 
 package com.android.example.github;
 
-import com.android.example.github.di.AppInjector;
-
 import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
+
+import com.android.example.github.auth.AuthParameters;
+import com.android.example.github.di.AppInjector;
+import com.android.example.github.di.AuthorizedComponent;
+import com.android.example.github.di.BeforeLoginComponent;
 
 import javax.inject.Inject;
 
@@ -29,6 +34,17 @@ import timber.log.Timber;
 
 
 public class GithubApp extends Application implements HasActivityInjector {
+    public static final String REINJECT_INTENT_ACTION = "reinject_intent_action";
+
+    @Inject
+    BeforeLoginComponent.Builder beforeloginComponentBuilder;
+
+    @Inject
+    AuthorizedComponent.Builder authorizedComponentBuilder;
+
+    private AuthParameters parameters;
+
+    private boolean initialInjectHappened = false;
 
     @Inject
     DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
@@ -40,6 +56,29 @@ public class GithubApp extends Application implements HasActivityInjector {
             Timber.plant(new Timber.DebugTree());
         }
         AppInjector.init(this);
+
+    }
+
+    public void setAuthorisation(AuthParameters parameters) {
+        if (parameters == null) {
+            if (!initialInjectHappened || this.parameters != null) {
+                BeforeLoginComponent component = beforeloginComponentBuilder.build();
+                component.inject(this);
+                this.parameters = null;
+                initialInjectHappened = true;
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent
+                        (REINJECT_INTENT_ACTION));
+            }
+        } else {
+            if (!parameters.equals(this.parameters)) {
+                AuthorizedComponent component = authorizedComponentBuilder.authParameters
+                        (parameters).build();
+                component.inject(this);
+                this.parameters = parameters;
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent
+                        (REINJECT_INTENT_ACTION));
+            }
+        }
     }
 
     @Override

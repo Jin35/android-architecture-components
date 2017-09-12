@@ -3,6 +3,8 @@ package com.android.example.github.di;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
+import com.android.example.github.ui.login.LoginActivity;
+import com.android.example.github.ui.login.LoginViewModel;
 import com.android.example.github.ui.repo.RepoViewModel;
 import com.android.example.github.ui.search.SearchViewModel;
 import com.android.example.github.ui.user.UserViewModel;
